@@ -8,7 +8,16 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        (async () => {
+            const response = await fetch("/.netlify/functions/config");
+            const config = await response.json();
 
+            if (config.manutencao === "true") {
+                window.location.href = "/manutencao.html";
+            }
+        })();
+    </script>
     <style>
         @keyframes fadeIn {
             from {
