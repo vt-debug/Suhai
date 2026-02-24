@@ -10,11 +10,22 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
         (async () => {
-            const response = await fetch("/.netlify/functions/config");
-            const config = await response.json();
+            try {
+                const response = await fetch("/.netlify/functions/config");
 
-            if (config.manutencao === "true") {
-                window.location.href = "/manutencao.html";
+                if (!response.ok) {
+                    console.error("Erro ao buscar config");
+                    return;
+                }
+
+                const config = await response.json();
+
+                if (config.manutencao === "true") {
+                    window.location.replace("manutencao.html");
+                }
+
+            } catch (error) {
+                console.error("Erro geral:", error);
             }
         })();
     </script>
