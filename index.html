@@ -1,26 +1,44 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Wiki SAC Suhai</title>
-    
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+
         .fade-in {
             animation: fadeIn 0.3s ease-out forwards;
         }
-        
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background-color: rgba(16, 185, 129, 0.5); border-radius: 10px; }
-        
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(16, 185, 129, 0.5);
+            border-radius: 10px;
+        }
+
         /* Previne o bounce effect indesejado no mobile quando o menu está aberto */
         body.menu-open {
             overflow: hidden;
@@ -28,50 +46,53 @@
         }
     </style>
 </head>
+
 <body class="min-h-screen bg-slate-50 flex flex-col md:flex-row font-sans text-slate-800 selection:bg-emerald-200">
 
-    <div class="md:hidden bg-emerald-800 text-white px-4 h-[64px] flex justify-between items-center shadow-md z-50 sticky top-0 w-full">
+    <div
+        class="md:hidden bg-emerald-800 text-white px-4 h-[64px] flex justify-between items-center shadow-md z-50 sticky top-0 w-full">
         <h2 class="font-bold text-lg flex items-center tracking-tight">
             <i data-lucide="shield-check" class="w-6 h-6 mr-2 text-emerald-400"></i> Wiki SAC Suhai
         </h2>
-        <button id="mobile-menu-btn" class="focus:outline-none p-2 -mr-2 text-emerald-100 hover:text-white transition-colors" aria-label="Menu">
+        <button id="mobile-menu-btn"
+            class="focus:outline-none p-2 -mr-2 text-emerald-100 hover:text-white transition-colors" aria-label="Menu">
             <i data-lucide="menu" class="w-6 h-6"></i>
         </button>
     </div>
 
-    <nav id="sidebar" class="hidden md:flex w-full md:w-72 bg-emerald-900 text-slate-300 flex-shrink-0 flex-col fixed md:sticky md:self-start top-[64px] md:top-0 left-0 h-[calc(100vh-64px)] md:h-screen overflow-y-auto shadow-2xl md:shadow-xl z-40 transition-transform duration-300">
+    <nav id="sidebar"
+        class="hidden md:flex w-full md:w-72 bg-emerald-900 text-slate-300 flex-shrink-0 flex-col fixed md:sticky md:self-start top-[64px] md:top-0 left-0 h-[calc(100vh-64px)] md:h-screen overflow-y-auto shadow-2xl md:shadow-xl z-40 transition-transform duration-300">
         <div class="p-6 hidden md:block">
             <h2 class="text-2xl font-black text-white flex items-center tracking-tight">
-                <i data-lucide="shield-check" class="w-8 h-8 mr-2 text-emerald-400"></i> WIKI <span class="text-emerald-400 ml-1">SAC</span>
+                <i data-lucide="shield-check" class="w-8 h-8 mr-2 text-emerald-400"></i> WIKI <span
+                    class="text-emerald-400 ml-1">SAC</span>
             </h2>
-            <p class="text-xs text-emerald-300/60 mt-1 uppercase tracking-wider font-semibold">Base de Conhecimento N1</p>
+            <p class="text-xs text-emerald-300/60 mt-1 uppercase tracking-wider font-semibold">Base de Conhecimento N1
+            </p>
         </div>
-        
+
         <div class="px-4 pb-4 pt-4 md:pt-0">
             <div class="relative">
                 <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-emerald-500"></i>
-                <input 
-                    type="text" 
-                    id="search-input"
-                    placeholder="Buscar categoria..." 
-                    class="w-full bg-emerald-950/50 border border-emerald-800 rounded-lg pl-9 pr-4 py-2.5 md:py-2 text-base md:text-sm text-white placeholder-emerald-500/50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all"
-                />
+                <input type="text" id="search-input" placeholder="Buscar categoria..."
+                    class="w-full bg-emerald-950/50 border border-emerald-800 rounded-lg pl-9 pr-4 py-2.5 md:py-2 text-base md:text-sm text-white placeholder-emerald-500/50 focus:outline-none focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400 transition-all" />
             </div>
         </div>
 
         <ul id="sidebar-nav" class="px-3 pb-6 space-y-1.5 flex-1">
-            </ul>
-        
-        <div class="p-5 mt-auto border-t border-emerald-800/50 text-xs text-center text-emerald-500/60 leading-relaxed bg-emerald-950/20">
-            Suhai Seguradora<br/>Suporte Operacional SAC
+        </ul>
+
+        <div
+            class="p-5 mt-auto border-t border-emerald-800/50 text-xs text-center text-emerald-500/60 leading-relaxed bg-emerald-950/20">
+            Suhai Seguradora<br />Suporte Operacional SAC
         </div>
     </nav>
 
     <main id="main-content" class="flex-1 p-3 sm:p-5 md:p-8 xl:p-12 max-w-5xl mx-auto w-full overflow-x-hidden">
-        </main>
+    </main>
 
     <script>
-        let activeTab = 'tabulacoes'; 
+        let activeTab = 'tabulacoes';
         let searchTerm = '';
         let isMobileMenuOpen = false;
 
@@ -200,11 +221,11 @@
         const GridSalesforceBox = (id, tipo, motivo, submotivo, prazo, dados, info) => {
             const tabulacao = `Tipo: ${tipo}\nMotivo: ${motivo}\nSubmotivo: ${submotivo}\nQuando usar: ${info}\nDados e Prazo: ${dados} | ${prazo}`;
             const encodedText = encodeURIComponent(tabulacao);
-            
+
             let prazoColor = "bg-slate-100 text-slate-700";
-            if(prazo.toLowerCase().includes('linha')) prazoColor = "bg-emerald-100 text-emerald-800 border border-emerald-200";
-            if(prazo.toLowerCase().includes('dia')) prazoColor = "bg-amber-100 text-amber-800 border border-amber-200";
-            
+            if (prazo.toLowerCase().includes('linha')) prazoColor = "bg-emerald-100 text-emerald-800 border border-emerald-200";
+            if (prazo.toLowerCase().includes('dia')) prazoColor = "bg-amber-100 text-amber-800 border border-amber-200";
+
             return `
             <div class="bg-white border border-slate-200 rounded-xl p-4 md:p-5 relative shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
                 <div class="flex-grow">
@@ -246,7 +267,7 @@
         const InlineSalesforceBox = (id, title, tipo, motivo, submotivo, info) => {
             const tabulacao = `Tipo: ${tipo}\nMotivo do caso: ${motivo}\nSubmotivo: ${submotivo}\nInformações: ${info}`;
             const encodedText = encodeURIComponent(tabulacao);
-            
+
             return `
             <div class="bg-slate-50 border border-slate-200 rounded-lg p-3 md:p-4 mt-4 relative">
                 <h4 class="font-bold text-emerald-700 mb-2 flex items-center text-sm md:text-base">
@@ -270,25 +291,25 @@
             `;
         };
 
-        window.copyToClipboard = function(btn) {
+        window.copyToClipboard = function (btn) {
             const text = decodeURIComponent(btn.getAttribute('data-text'));
             const textArea = document.createElement("textarea");
             textArea.value = text;
             document.body.appendChild(textArea);
             textArea.select();
-            
+
             try {
                 document.execCommand('copy');
                 const originalHtml = btn.innerHTML;
-                
-                if(btn.classList.contains('w-full') && btn.classList.contains('border-2')) {
+
+                if (btn.classList.contains('w-full') && btn.classList.contains('border-2')) {
                     btn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 mr-2 text-emerald-600"></i> <span class="text-emerald-700">Copiado!</span>`;
                 } else {
                     btn.innerHTML = `<i data-lucide="check-circle" class="w-4 h-4 mr-2 text-emerald-500"></i> <span class="text-emerald-700 font-medium">Copiado!</span>`;
                 }
 
                 lucide.createIcons({ root: btn });
-                
+
                 setTimeout(() => {
                     btn.innerHTML = originalHtml;
                     lucide.createIcons({ root: btn });
@@ -299,18 +320,18 @@
             document.body.removeChild(textArea);
         };
 
-        window.handleTabulacoesSearch = function(event) {
+        window.handleTabulacoesSearch = function (event) {
             const query = event.target.value.toLowerCase();
             renderTabulacoesList(query);
         };
 
-        window.renderTabulacoesList = function(query = '') {
+        window.renderTabulacoesList = function (query = '') {
             const grid = document.getElementById('tabulacoes-grid');
             if (!grid) return;
 
-            const filtered = tabulacoesDB.filter(t => 
-                t.motivo.toLowerCase().includes(query) || 
-                t.submotivo.toLowerCase().includes(query) || 
+            const filtered = tabulacoesDB.filter(t =>
+                t.motivo.toLowerCase().includes(query) ||
+                t.submotivo.toLowerCase().includes(query) ||
                 t.tipo.toLowerCase().includes(query) ||
                 t.info.toLowerCase().includes(query)
             );
@@ -1158,7 +1179,7 @@
         function renderSidebar() {
             const ul = document.getElementById('sidebar-nav');
             const filteredTabs = tabs.filter(tab => tab.title.toLowerCase().includes(searchTerm.toLowerCase()));
-            
+
             if (filteredTabs.length === 0) {
                 ul.innerHTML = `<li class="px-4 py-3 text-sm text-emerald-500/50 italic text-center">Nenhuma categoria encontrada.</li>`;
             } else {
@@ -1180,8 +1201,8 @@
         function renderMainContent() {
             const main = document.getElementById('main-content');
             let contentHtml = '';
-            
-            switch(activeTab) {
+
+            switch (activeTab) {
                 case 'tabulacoes': contentHtml = contentTabulacoes(); break;
                 case 'atendimento': contentHtml = contentAtendimento(); break;
                 case 'conceitos': contentHtml = contentConceitos(); break;
@@ -1194,7 +1215,7 @@
                 case 'sinistro': contentHtml = contentSinistro(); break;
                 default: contentHtml = '<div>Selecione uma categoria.</div>';
             }
-            
+
             main.innerHTML = contentHtml;
             lucide.createIcons({ root: main });
 
@@ -1203,11 +1224,11 @@
             }
         }
 
-        window.setActiveTab = function(id) {
+        window.setActiveTab = function (id) {
             activeTab = id;
-            
+
             const sidebar = document.getElementById('sidebar');
-            if(window.innerWidth < 768 && !sidebar.classList.contains('hidden')) {
+            if (window.innerWidth < 768 && !sidebar.classList.contains('hidden')) {
                 sidebar.classList.add('hidden');
                 sidebar.classList.remove('flex');
                 isMobileMenuOpen = false;
@@ -1216,7 +1237,7 @@
                 lucide.createIcons({ root: document.getElementById('mobile-menu-btn') });
             }
 
-            window.scrollTo(0,0);
+            window.scrollTo(0, 0);
             renderSidebar();
             renderMainContent();
         };
@@ -1231,7 +1252,7 @@
                 const sidebar = document.getElementById('sidebar');
                 const btn = document.getElementById('mobile-menu-btn');
                 isMobileMenuOpen = !isMobileMenuOpen;
-                
+
                 if (isMobileMenuOpen) {
                     sidebar.classList.remove('hidden');
                     sidebar.classList.add('flex');
@@ -1248,8 +1269,9 @@
 
             renderSidebar();
             renderMainContent();
-            lucide.createIcons(); 
+            lucide.createIcons();
         });
     </script>
 </body>
+
 </html>
