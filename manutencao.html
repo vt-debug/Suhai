@@ -45,35 +45,12 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
             background: rgba(0, 0, 0, 0.65);
             backdrop-filter: blur(8px);
             border-bottom: 1px solid #10b981;
             color: #d1fae5;
             font-size: 14px;
             z-index: 30;
-        }
-
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            background: #ef4444;
-            border-radius: 50%;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                box-shadow: 0 0 5px #ef4444;
-            }
-
-            50% {
-                box-shadow: 0 0 15px #ef4444;
-            }
-
-            100% {
-                box-shadow: 0 0 5px #ef4444;
-            }
         }
 
         .bottom-hud {
@@ -107,8 +84,7 @@
 <body>
 
     <div class="top-status">
-        <div class="status-dot"></div>
-        SISTEMA TEMPORARIAMENTE INDISPONÍVEL • Manutenção interna em andamento
+        🔧 SISTEMA TEMPORARIAMENTE INDISPONÍVEL • Manutenção em andamento
     </div>
 
     <canvas id="canvas"></canvas>
@@ -131,16 +107,16 @@
     <script>
         const canvas = document.getElementById("canvas");
         const ctx = canvas.getContext("2d");
-        canvas.width = innerWidth;
-        canvas.height = innerHeight;
 
+        let particlesArray = [];
         let mouse = { x: null, y: null };
         let impactForce = 0;
 
-        window.addEventListener("mousemove", e => {
-            mouse.x = e.x;
-            mouse.y = e.y;
-        });
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
 
 
         class Particle {
@@ -152,7 +128,6 @@
                 this.size = 2;
                 this.density = Math.random() * 30 + 1;
             }
-
             draw() {
                 ctx.fillStyle = "#10b981";
                 ctx.shadowColor = "#10b981";
@@ -161,15 +136,12 @@
                 ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
                 ctx.fill();
             }
-
             update() {
-
                 if (mouse.x === null || mouse.y === null) {
                     this.x += (this.baseX - this.x) / 10;
                     this.y += (this.baseY - this.y) / 10;
                     return;
                 }
-
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let distance = Math.sqrt(dx * dx + dy * dy);
@@ -183,34 +155,26 @@
                     this.x += (this.baseX - this.x) / 10;
                     this.y += (this.baseY - this.y) / 10;
                 }
-
-                if (impactForce > 0) {
-                    this.x += (Math.random() - 0.5) * impactForce;
-                    this.y += (Math.random() - 0.5) * impactForce;
-                }
             }
         }
 
-        let particlesArray = [];
 
         function init() {
             particlesArray = [];
+            resizeCanvas();
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
             const isMobile = window.innerWidth < 768;
+            const fontSize = isMobile ? Math.min(canvas.width * 0.25, 140) : 180;
 
-            const fontSize = isMobile ? canvas.width * 0.22 : 180;
-
-            ctx.font = "bold " + fontSize + "px Arial";
+            ctx.font = `bold ${fontSize}px Arial`;
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            const verticalPosition = isMobile
-                ? canvas.height * 0.42
-                : canvas.height / 2;
+            const centerY = canvas.height / 2;
 
-            ctx.fillText("SUHAI", canvas.width / 2, verticalPosition);
+            ctx.fillText("SUHAI", canvas.width / 2, centerY);
 
             const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -223,56 +187,6 @@
             }
         }
 
-        window.addEventListener("resize", () => {
-            canvas.width = innerWidth;
-            canvas.height = innerHeight;
-            particlesArray = [];
-            init();
-        });
-
-
-        let explosions = [];
-        let hue = 0;
-
-        class ExplosionParticle {
-            constructor(x, y) {
-                this.x = x;
-                this.y = y;
-                this.radius = Math.random() * 4 + 2;
-                this.life = 40;
-                this.angle = Math.random() * Math.PI * 2;
-                this.speed = Math.random() * 5 + 2;
-                this.hue = hue;
-            }
-
-            update() {
-                this.x += Math.cos(this.angle) * this.speed;
-                this.y += Math.sin(this.angle) * this.speed;
-                this.life--;
-            }
-
-            draw() {
-                ctx.fillStyle = `hsla(${this.hue},100%,60%,${this.life / 40})`;
-                ctx.shadowColor = `hsl(${this.hue},100%,60%)`;
-                ctx.shadowBlur = 20;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function createExplosion(x, y) {
-            for (let i = 0; i < 60; i++) {
-                explosions.push(new ExplosionParticle(x, y));
-            }
-            hue += 40;
-
-            impactForce = 15;
-
-            setTimeout(() => impactForce = 8, 80);
-            setTimeout(() => impactForce = 4, 160);
-            setTimeout(() => impactForce = 0, 300);
-        }
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -282,15 +196,22 @@
                 p.draw();
             });
 
-            explosions.forEach((e, index) => {
-                e.update();
-                e.draw();
-                if (e.life <= 0) explosions.splice(index, 1);
-            });
-
             requestAnimationFrame(animate);
         }
-        animate();
+
+
+        window.addEventListener("mousemove", e => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        window.addEventListener("resize", init);
+
+
+        window.addEventListener("load", () => {
+            init();
+            animate();
+        });
 
 
         const chefe = document.getElementById("chefe");
@@ -317,19 +238,12 @@
         chefe.addEventListener("click", () => {
             score++;
             scoreEl.innerText = score;
-            speed += 0.5;
-            dx = (dx > 0 ? 1 : -1) * speed;
-            dy = (dy > 0 ? 1 : -1) * speed;
-
-            createExplosion(x + 45, y + 45);
         });
-
 
         const music = document.getElementById("bgMusic");
         const musicBtn = document.getElementById("musicBtn");
 
         music.volume = 0.25;
-
         let musicStarted = false;
 
         function startMusic() {
