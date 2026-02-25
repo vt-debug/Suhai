@@ -8,27 +8,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-        (async () => {
-            try {
-                const response = await fetch("/.netlify/functions/config");
-
-                if (!response.ok) {
-                    console.error("Erro ao buscar config");
-                    return;
-                }
-
-                const config = await response.json();
-
-                if (config.manutencao === "true") {
-                    window.location.replace("/manutencao.html");
-                }
-
-            } catch (error) {
-                console.error("Erro geral:", error);
-            }
-        })();
-    </script>
 
     <style>
         @keyframes fadeIn {
