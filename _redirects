@@ -1,1 +1,4 @@
-/*   /manutencao.html   302
+/img-audio/*  /img-audio/:splat  200
+/css/*         /css/:splat         200
+/js/*          /js/:splat          200
+/*             /manutencao.html    200!
