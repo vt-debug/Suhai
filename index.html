@@ -60,6 +60,7 @@
             border-radius: 10px;
         }
 
+
         body.menu-open {
             overflow: hidden;
             touch-action: none;
@@ -111,6 +112,7 @@
     <main id="main-content" class="flex-1 p-3 sm:p-5 md:p-8 xl:p-12 max-w-5xl mx-auto w-full overflow-x-hidden">
     </main>
 
+    <!-- Toast de Notificação para Downloads e Cópias -->
     <div id="toast"
         class="fixed bottom-4 right-4 md:bottom-8 md:right-8 bg-slate-900 text-white px-5 py-3 rounded-lg shadow-2xl transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center border border-slate-700">
         <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 mr-3 text-emerald-400"></i>
@@ -217,8 +219,38 @@
             { id: 't92', motivo: 'Sinistro', tipo: 'Solicitação', submotivo: 'Pedido de Reanalise', prazo: '5 dias úteis', dados: 'Possui dados Obrigatórios', info: 'Caso o cliente receba conclusão de indenização parcial e não concorde (necessário orçamento > 75%). Tipo de Sinistro: Roubo Recuperado.' }
         ];
 
+        const atpvDB = [
+            { uf: 'AC', estado: 'Acre', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'AL', estado: 'Alagoas', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'AP', estado: 'Amapá', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'AM', estado: 'Amazonas', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'BA', estado: 'Bahia', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'CE', estado: 'Ceará', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'DF', estado: 'Distrito Federal', gravame: 'Não', queixa: 'Não', debito: 'Não', monta: 'Não', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'ES', estado: 'Espírito Santo', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'GO', estado: 'Goiás', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'MA', estado: 'Maranhão', gravame: 'Não', queixa: 'Não', debito: 'Não', monta: 'Não', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'MT', estado: 'Mato Grosso', gravame: 'Sim', queixa: 'Sim', debito: 'Sim', monta: 'Sim', procuracao: 'Emissão do ATPV-e', intencao: 'Emissão do ATPV-e' },
+            { uf: 'MS', estado: 'Mato Grosso do Sul', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'MG', estado: 'Minas Gerais', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'PA', estado: 'Pará', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'PB', estado: 'Paraíba', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'PR', estado: 'Paraná', gravame: 'Sim', queixa: 'Sim', debito: 'Sim', monta: 'Sim', procuracao: 'Emissão do ATPV-e', intencao: 'Emissão do ATPV-e' },
+            { uf: 'PE', estado: 'Pernambuco', gravame: 'Não', queixa: 'Não', debito: 'Não', monta: 'Não', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'PI', estado: 'Piauí', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'RJ', estado: 'Rio de Janeiro', gravame: 'Sim', queixa: 'Sim', debito: 'Sim', monta: 'Sim', procuracao: 'Emissão do ATPV-e', intencao: 'Intenção + Código de Segurança' },
+            { uf: 'RN', estado: 'Rio Grande do Norte', gravame: 'Sim', queixa: 'Sim', debito: 'Sim', monta: 'Sim', procuracao: 'Emissão do ATPV-e', intencao: 'Emissão do ATPV-e' },
+            { uf: 'RS', estado: 'Rio Grande do Sul', gravame: 'Não', queixa: 'Não', debito: 'Não', monta: 'Não', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'RO', estado: 'Rondônia', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'RR', estado: 'Roraima', gravame: 'Sim', queixa: 'Sim', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Não' },
+            { uf: 'SC', estado: 'Santa Catarina', gravame: 'Não', queixa: 'Não', debito: 'Sim', monta: 'Sim', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'SE', estado: 'Sergipe', gravame: 'Sim', queixa: 'Sim', debito: 'Não', monta: 'Sim', procuracao: 'Sim', intencao: 'Sim' },
+            { uf: 'TO', estado: 'Tocantins', gravame: 'Sim', queixa: 'Não', debito: 'Sim', monta: 'Não', procuracao: 'Sim', intencao: 'Sim' }
+        ];
+
         const tabs = [
             { id: 'tabulacoes', title: 'Pesquisa Submotivos', icon: 'search-check' },
+            { id: 'atpv', title: 'Impossibilidade ATPV-e', icon: 'map' },
             { id: 'atendimento', title: 'Atendimento & Dicas', icon: 'headphones' },
             { id: 'conceitos', title: 'Conceitos Básicos', icon: 'book-open' },
             { id: 'coberturas', title: 'Coberturas Suhai', icon: 'shield-check' },
@@ -342,7 +374,6 @@
         }
 
         window.downloadDoc = function (docName) {
-            // Mapeamento dos nomes dos botões para os nomes exatos dos arquivos locais
             const fileMap = {
                 'Declaração de Erro de Preenchimento': 'declaracao_erro_preenchimento.pdf',
                 'Declaração de Perda/Extravio do CRV': 'declaracao_perda_extravio_crv.pdf',
@@ -353,18 +384,16 @@
             };
 
             const fileName = fileMap[docName] || 'documento_suhai.pdf';
-            // Caminho para a pasta onde os documentos devem estar salvos localmente
             const filePath = './documentos/' + fileName;
 
             window.showToast(`Iniciando download do modelo: ${docName}...`, 'download-cloud');
 
-            // Criação de um link temporário (tag <a>) para forçar o download
             const a = document.createElement('a');
             a.href = filePath;
-            a.download = fileName; // O atributo download força o navegador a baixar o arquivo
+            a.download = fileName;
             document.body.appendChild(a);
-            a.click(); // Aciona o clique invisível
-            document.body.removeChild(a); // Remove a tag após o uso
+            a.click();
+            document.body.removeChild(a);
         }
 
         window.copyToClipboard = function (btn) {
@@ -424,6 +453,36 @@
             lucide.createIcons({ root: grid });
         };
 
+        window.handleAtpvSearch = function (event) {
+            renderAtpvTable(event.target.value.toLowerCase());
+        };
+
+        window.renderAtpvTable = function (query = '') {
+            const tbody = document.getElementById('atpv-table-body');
+            if (!tbody) return;
+
+            const filtered = atpvDB.filter(t =>
+                t.estado.toLowerCase().includes(query) ||
+                t.uf.toLowerCase().includes(query)
+            );
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500 border-b border-slate-100">Nenhum estado encontrado para "${query}".</td></tr>`;
+            } else {
+                tbody.innerHTML = filtered.map(t => `
+                    <tr class="group transition-colors hover:bg-slate-50">
+                        <td class="px-4 py-3.5 font-semibold text-slate-800 whitespace-nowrap sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-100 shadow-[1px_0_0_0_#f1f5f9]">${t.estado} (${t.uf})</td>
+                        <td class="px-4 py-3.5 text-center whitespace-nowrap border-b border-slate-100 ${t.gravame !== 'Não' ? 'text-slate-800 font-bold' : 'text-slate-400'}">${t.gravame}</td>
+                        <td class="px-4 py-3.5 text-center whitespace-nowrap border-b border-slate-100 ${t.queixa !== 'Não' ? 'text-slate-800 font-bold' : 'text-slate-400'}">${t.queixa}</td>
+                        <td class="px-4 py-3.5 text-center whitespace-nowrap border-b border-slate-100 ${t.debito !== 'Não' ? 'text-slate-800 font-bold' : 'text-slate-400'}">${t.debito}</td>
+                        <td class="px-4 py-3.5 text-center whitespace-nowrap border-b border-slate-100 ${t.monta !== 'Não' ? 'text-slate-800 font-bold' : 'text-slate-400'}">${t.monta}</td>
+                        <td class="px-4 py-3.5 font-medium text-slate-700 whitespace-nowrap border-b border-l border-slate-100">${t.procuracao}</td>
+                        <td class="px-4 py-3.5 font-medium text-slate-700 whitespace-nowrap border-b border-slate-100">${t.intencao}</td>
+                    </tr>
+                `).join('');
+            }
+        };
+
         const contentTabulacoes = () => `
             <div class="fade-in">
                 <div class="bg-teal-700 text-white p-5 md:p-8 rounded-2xl mb-6 shadow-md">
@@ -449,6 +508,53 @@
                 </div>
 
                 <div id="tabulacoes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                </div>
+            </div>
+        `;
+
+        const contentAtpv = () => `
+            <div class="fade-in">
+                <div class="bg-teal-700 text-white p-5 md:p-8 rounded-2xl mb-6 shadow-md">
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2 flex items-center"><i data-lucide="map" class="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 text-teal-200 shrink-0"></i> Impossibilidade de Emissão ATPV-e</h1>
+                    <p class="opacity-90 text-sm md:text-base mt-1">Filtro de estados do Brasil com as regras e bloqueios de emissão do documento.</p>
+                </div>
+
+                <div class="bg-white p-3 md:p-6 rounded-xl shadow-lg border border-slate-200 mb-6 sticky top-[80px] md:top-4 z-30 shadow-slate-200/50">
+                    <div class="relative">
+                        <i data-lucide="search" class="w-5 h-5 md:w-6 md:h-6 absolute left-3.5 top-3.5 text-slate-400"></i>
+                        <input 
+                            type="text" 
+                            id="search-atpv"
+                            oninput="handleAtpvSearch(event)"
+                            placeholder="Procure por estado (ex: São Paulo, RJ)..." 
+                            class="w-full bg-slate-50 border-2 border-slate-200 rounded-xl pl-11 pr-4 py-3 text-slate-800 placeholder-slate-400 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 transition-colors text-base md:text-lg"
+                        />
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-8">
+                    <div class="overflow-x-auto w-full">
+                        <table class="w-full text-left min-w-max border-separate border-spacing-0">
+                            <thead class="text-xs md:text-sm text-slate-700 uppercase bg-slate-100">
+                                <tr>
+                                    <th class="px-4 py-4 whitespace-nowrap sticky left-0 bg-slate-100 z-20 border-b border-r border-slate-200 shadow-[1px_0_0_0_#e2e8f0]">Estado</th>
+                                    <th class="px-4 py-4 whitespace-nowrap text-center border-b border-slate-200">Gravame</th>
+                                    <th class="px-4 py-4 whitespace-nowrap text-center border-b border-slate-200">Queixa</th>
+                                    <th class="px-4 py-4 whitespace-nowrap text-center border-b border-slate-200">Débito</th>
+                                    <th class="px-4 py-4 whitespace-nowrap text-center border-b border-slate-200">Restrição Monta</th>
+                                    <th class="px-4 py-4 whitespace-nowrap border-b border-l border-slate-200">Procuração</th>
+                                    <th class="px-4 py-4 whitespace-nowrap border-b border-slate-200">Intenção de Venda</th>
+                                </tr>
+                            </thead>
+                            <tbody id="atpv-table-body" class="text-xs md:text-sm">
+                                <!-- Linhas renderizadas via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Aviso para rolar no mobile -->
+                    <div class="bg-slate-50 text-slate-500 text-xs text-center py-3 md:hidden flex justify-center items-center border-t border-slate-200">
+                        <i data-lucide="arrow-left-right" class="w-4 h-4 mr-2 text-slate-400"></i> Deslize a tabela para os lados para ver mais
+                    </div>
                 </div>
             </div>
         `;
@@ -1454,9 +1560,9 @@
                     <li>
                         <button
                             onclick="setActiveTab('${tab.id}')"
-                            class="w-full flex items-center px-4 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === tab.id ? (tab.id === 'tabulacoes' ? 'bg-teal-600 text-white shadow-md' : 'bg-emerald-500 text-white shadow-md') : 'hover:bg-emerald-800/60 hover:text-white'}"
+                            class="w-full flex items-center px-4 py-3 md:py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${activeTab === tab.id ? (tab.id === 'tabulacoes' || tab.id === 'atpv' ? 'bg-teal-600 text-white shadow-md' : 'bg-emerald-500 text-white shadow-md') : 'hover:bg-emerald-800/60 hover:text-white'}"
                         >
-                            <i data-lucide="${tab.icon}" class="w-5 h-5 mr-3 ${activeTab === tab.id ? 'text-white' : (tab.id === 'tabulacoes' ? 'text-teal-400' : 'text-emerald-500')}"></i>
+                            <i data-lucide="${tab.icon}" class="w-5 h-5 mr-3 ${activeTab === tab.id ? 'text-white' : (tab.id === 'tabulacoes' || tab.id === 'atpv' ? 'text-teal-400' : 'text-emerald-500')}"></i>
                             ${tab.title}
                         </button>
                     </li>
@@ -1471,6 +1577,7 @@
 
             switch (activeTab) {
                 case 'tabulacoes': contentHtml = contentTabulacoes(); break;
+                case 'atpv': contentHtml = contentAtpv(); break;
                 case 'atendimento': contentHtml = contentAtendimento(); break;
                 case 'conceitos': contentHtml = contentConceitos(); break;
                 case 'coberturas': contentHtml = contentCoberturas(); break;
@@ -1488,6 +1595,9 @@
 
             if (activeTab === 'tabulacoes') {
                 setTimeout(() => renderTabulacoesList(), 0);
+            }
+            if (activeTab === 'atpv') {
+                setTimeout(() => renderAtpvTable(), 0);
             }
         }
 
