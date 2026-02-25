@@ -117,7 +117,16 @@
         🎮 Capture o Chefe • Pontos: <span id="score">0</span>
     </div>
 
-    <img src="img/chefe.png" id="chefe">
+    <img src="img-audio/chefe.png" id="chefe">
+
+    <audio id="bgMusic" loop>
+        <source src="img-audio/telemarketing.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="musicBtn"
+        class="fixed top-16 right-5 bg-black/70 text-green-400 border border-green-400 px-3 py-2 rounded-full z-40">
+        🔊
+    </button>
 
     <script>
         const canvas = document.getElementById("canvas");
@@ -294,6 +303,34 @@
             dy = (dy > 0 ? 1 : -1) * speed;
 
             createExplosion(x + 45, y + 45);
+        });
+
+
+        const music = document.getElementById("bgMusic");
+        const musicBtn = document.getElementById("musicBtn");
+
+        music.volume = 0.25;
+
+        let musicStarted = false;
+
+        function startMusic() {
+            if (!musicStarted) {
+                music.play().catch(() => { });
+                musicStarted = true;
+            }
+        }
+
+        window.addEventListener("click", startMusic);
+        window.addEventListener("touchstart", startMusic);
+
+        musicBtn.addEventListener("click", () => {
+            if (music.paused) {
+                music.play();
+                musicBtn.innerText = "🔊";
+            } else {
+                music.pause();
+                musicBtn.innerText = "🔇";
+            }
         });
     </script>
 
