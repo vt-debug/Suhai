@@ -194,10 +194,23 @@
         let particlesArray = [];
 
         function init() {
-            ctx.font = "bold 180px Arial";
+            particlesArray = [];
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const isMobile = window.innerWidth < 768;
+
+            const fontSize = isMobile ? canvas.width * 0.22 : 180;
+
+            ctx.font = "bold " + fontSize + "px Arial";
             ctx.fillStyle = "white";
             ctx.textAlign = "center";
-            ctx.fillText("SUHAI", canvas.width / 2, canvas.height / 2);
+            ctx.textBaseline = "middle";
+
+            const verticalPosition = isMobile
+                ? canvas.height * 0.42
+                : canvas.height / 2;
+
+            ctx.fillText("SUHAI", canvas.width / 2, verticalPosition);
 
             const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
@@ -209,7 +222,13 @@
                 }
             }
         }
-        init();
+
+        window.addEventListener("resize", () => {
+            canvas.width = innerWidth;
+            canvas.height = innerHeight;
+            particlesArray = [];
+            init();
+        });
 
 
         let explosions = [];

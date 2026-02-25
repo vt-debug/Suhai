@@ -29,6 +29,7 @@
             }
         })();
     </script>
+
     <style>
         @keyframes fadeIn {
             from {
@@ -111,6 +112,13 @@
     <main id="main-content" class="flex-1 p-3 sm:p-5 md:p-8 xl:p-12 max-w-5xl mx-auto w-full overflow-x-hidden">
     </main>
 
+    <!-- Toast de Notificação para Downloads e Cópias -->
+    <div id="toast"
+        class="fixed bottom-4 right-4 md:bottom-8 md:right-8 bg-slate-900 text-white px-5 py-3 rounded-lg shadow-2xl transform translate-y-24 opacity-0 transition-all duration-300 z-50 flex items-center border border-slate-700">
+        <i id="toast-icon" data-lucide="check-circle" class="w-5 h-5 mr-3 text-emerald-400"></i>
+        <span id="toast-msg" class="text-sm font-medium"></span>
+    </div>
+
     <script>
         let activeTab = 'tabulacoes';
         let searchTerm = '';
@@ -184,7 +192,7 @@
             { id: 't65', motivo: 'Financeiro', tipo: 'Solicitação', submotivo: 'Devolução de Crédito', prazo: '5 dias úteis', dados: 'Solicitar comprovante', info: 'UTILIZAR QUANDO SEGURADO PAGAR PARCELA DE BOLETO COM APÓLICE JÁ CANCELADA.' },
             { id: 't66', motivo: 'Financeiro', tipo: 'Solicitação', submotivo: 'Pagamento Rejeitado', prazo: '5 dias úteis', dados: 'Possui dados obrigatórios', info: 'UTILIZAR QUANDO HOUVER NECESSIDADE DE UMA REPROGRAMAÇÃO DE PAGAMENTO. OBRIGATÓRIO CONFIRMAR OS DADOS BANCÁRIOS (CONTA PF OU PJ, CONTA, AGÊNCIA, BANCO E CPF)' },
             { id: 't67', motivo: 'Sistema', tipo: 'Informação', submotivo: 'Redefinição de Senha - COTADOR', prazo: 'Em linha', dados: 'Não possui', info: 'REDEFINIÇÃO DE SENHA - COTADOR' },
-            { id: 't68', motivo: 'Sistema', tipo: 'Informação', submotivo: 'Redefinição de Senha - I4PRO', prazo: 'Em linha', dados: 'Não possui', info: 'Redefinição de Senha - I4PRO' },
+            { id: 't68', motivo: 'Sistema', tipo: 'Informação', submotivo: 'Redefinição de Senha - I4PRO', prazo: 'Em linha', dados: 'Não possui', info: 'REDEFINIÇÃO DE SENHA - I4PRO' },
             { id: 't69', motivo: 'Sistema', tipo: 'Solicitação', submotivo: 'Erro de Cotação', prazo: '5 dias úteis', dados: 'Possui dados obrigatórios', info: 'UTILIZAR QUANDO APRESENTAR ALGUM ERRO NO ATO DO LANÇAMENTO DA COTAÇÃO (EXEMPLO: INFORMAR O CPF E O SISTEMA AUTOMATICAMENTE TRAZ A INFORMAÇÃO DE GÊNERO DIVERGENTE DO CORRETO) OBRIGATÓRIO ENVIO DO PRINT' },
             { id: 't70', motivo: 'Sistema', tipo: 'Solicitação', submotivo: 'Alteração de Acesso Master', prazo: '5 dias úteis', dados: 'Possui dados obrigatórios', info: 'ALTERAÇÃO DE ACESSO MASTER' },
             { id: 't71', motivo: 'Sistema', tipo: 'Informação', submotivo: 'Dúvidas Sobre Navegação', prazo: 'Em linha', dados: 'Não possui', info: 'DÚVIDAS SOBRE NAVEGAÇÃO' },
@@ -206,7 +214,9 @@
             { id: 't87', motivo: 'Assistência 24hrs', tipo: 'Reclamação', submotivo: 'Danos', prazo: '5 dias úteis', dados: 'Possui dados obrigatórios', info: 'DANOS CAUSADOS APÓS USO DO GUINCHO' },
             { id: 't88', motivo: 'Assistência 24hrs', tipo: 'Reclamação', submotivo: 'Negativa de Atendimento', prazo: '5 dias úteis', dados: 'Possui dados obrigatórios', info: 'NEGATIVA DE ATENDIMENTO NA ASSISTÊNCIA' },
             { id: 't89', motivo: 'Assistência 24hrs', tipo: 'Reclamação', submotivo: 'Reembolso', prazo: '5 dias úteis', dados: 'Possui dados obrigatórios', info: 'UTILIZAR QUANDO O SEGURADO RELATAR QUE JÁ REALIZOU A SOLICITAÇÃO DO REEMBOLSO NA ASSISTÊNCIA E ESTA EM ATRASO.' },
-            { id: 't90', motivo: 'Assistência 24hrs', tipo: 'Informação', submotivo: 'Transferido para 0800', prazo: 'Em linha', dados: 'Não possui', info: 'TRANSFERIDO PARA 0800' }
+            { id: 't90', motivo: 'Assistência 24hrs', tipo: 'Informação', submotivo: 'Transferido para 0800', prazo: 'Em linha', dados: 'Não possui', info: 'TRANSFERIDO PARA 0800' },
+            { id: 't91', motivo: 'Sinistro', tipo: 'Reclamação', submotivo: 'Atraso na auditoria de qualidade', prazo: '5 dias úteis', dados: 'Possui dados Obrigatórios', info: 'Se ultrapassar 15 dias úteis sem atualização no sistema sobre a auditoria. Tipo de sinistro: Roubo/Furto.' },
+            { id: 't92', motivo: 'Sinistro', tipo: 'Solicitação', submotivo: 'Pedido de Reanalise', prazo: '5 dias úteis', dados: 'Possui dados Obrigatórios', info: 'Caso o cliente receba conclusão de indenização parcial e não concorde (necessário orçamento > 75%). Tipo de Sinistro: Roubo Recuperado.' }
         ];
 
         const tabs = [
@@ -231,11 +241,17 @@
 
         const Card = (title, children, className = "") => `
             <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-5 md:mb-6 ${className}">
-                ${title ? `<h3 class="text-base md:text-lg font-bold text-slate-800 mb-3 md:mb-4">${title}</h3>` : ''}
+                ${title ? `<h3 class="text-base md:text-lg font-bold text-slate-800 mb-3 md:mb-4 border-b border-slate-100 pb-2">${title}</h3>` : ''}
                 <div class="text-sm md:text-base text-slate-600 space-y-3">
                     ${children}
                 </div>
             </div>
+        `;
+
+        const DownloadBtn = (label) => `
+            <button onclick="downloadDoc('${label}')" class="mt-2.5 inline-flex items-center px-3 py-1.5 border border-emerald-200 bg-emerald-50 text-emerald-700 text-xs font-semibold rounded-md hover:bg-emerald-100 hover:border-emerald-300 transition-colors shadow-sm active:bg-emerald-200">
+                <i data-lucide="download" class="w-3.5 h-3.5 mr-1.5"></i> Baixar ${label}
+            </button>
         `;
 
         const GridSalesforceBox = (id, tipo, motivo, submotivo, prazo, dados, info) => {
@@ -311,6 +327,48 @@
             `;
         };
 
+        window.showToast = function (msg, icon = 'check-circle') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.innerText = msg;
+            toastIcon.setAttribute('data-lucide', icon);
+            lucide.createIcons({ root: toast });
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3000);
+        }
+
+        window.downloadDoc = function (docName) {
+            // Mapeamento dos nomes dos botões para os nomes exatos dos arquivos locais
+            const fileMap = {
+                'Declaração de Erro de Preenchimento': 'declaracao_erro_preenchimento.pdf',
+                'Declaração de Perda/Extravio do CRV': 'declaracao_perda_extravio_crv.pdf',
+                'Modelo de Procuração': 'modelo_procuracao.pdf',
+                'Formulário de Indenização': 'formulario_indenizacao.pdf',
+                'Declaração Suhai de Residência': 'declaracao_residencia_suhai.pdf',
+                'Formulário Subs. de Garantia': 'formulario_substituicao_garantia.pdf'
+            };
+
+            const fileName = fileMap[docName] || 'documento_suhai.pdf';
+            // Caminho para a pasta onde os documentos devem estar salvos localmente
+            const filePath = './documentos/' + fileName;
+
+            window.showToast(`Iniciando download do modelo: ${docName}...`, 'download-cloud');
+
+            // Criação de um link temporário (tag <a>) para forçar o download
+            const a = document.createElement('a');
+            a.href = filePath;
+            a.download = fileName; // O atributo download força o navegador a baixar o arquivo
+            document.body.appendChild(a);
+            a.click(); // Aciona o clique invisível
+            document.body.removeChild(a); // Remove a tag após o uso
+        }
+
         window.copyToClipboard = function (btn) {
             const text = decodeURIComponent(btn.getAttribute('data-text'));
             const textArea = document.createElement("textarea");
@@ -329,6 +387,7 @@
                 }
 
                 lucide.createIcons({ root: btn });
+                window.showToast('Conteúdo copiado para a área de transferência!');
 
                 setTimeout(() => {
                     btn.innerHTML = originalHtml;
@@ -645,58 +704,104 @@
             <div class="fade-in">
                 <div class="bg-emerald-600 text-white p-5 md:p-8 rounded-2xl mb-6 shadow-md">
                     <h1 class="text-2xl md:text-3xl font-bold mb-2 flex items-center"><i data-lucide="monitor" class="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 shrink-0"></i> Sistemas de Apoio Suhai</h1>
-                    <p class="opacity-90 text-sm md:text-base mt-1">Quais são e para que servem os sistemas utilizados pela central.</p>
+                    <p class="opacity-90 text-sm md:text-base mt-1">Guia detalhado de cada sistema, suas funções, caminhos e regras de utilização.</p>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                ${SectionTitle('Entrada e Gestão de Apólices')}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
                     ${Card('Cotador', `
-                        <p class="font-medium text-slate-700">Sistema de entrada da seguradora.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1.5">
-                            <li>Usado para visualizar cotações e propostas <strong>antes</strong> de virar apólice.</li>
-                            <li>Consulta dados do corretor e do futuro segurado.</li>
-                            <li>Possui manual técnico embutido.</li>
-                            <li><span class="text-red-600 font-semibold bg-red-50 px-1 rounded">Evite:</span> Não use o Cotador para tratar de uma apólice já emitida (use o I4Pro).</li>
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Sistema de entrada da seguradora.</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Visualizar cotações e propostas <strong>antes</strong> de virar apólice.</li>
+                            <li><strong>Utilização:</strong> Consulta de dados do corretor, futuro segurado e acesso ao manual técnico embutido.</li>
+                            <li><span class="text-red-600 font-semibold bg-red-50 px-1 rounded">Regra:</span> Não utilize o Cotador para tratar de uma apólice que já foi emitida (para isso, use o I4Pro).</li>
                         </ul>
                     `)}
                     ${Card('I4PRO', `
-                        <p class="font-medium text-slate-700">Sistema principal de Gestão de Apólices.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1.5">
-                            <li>Consulta de dados completos da apólice.</li>
-                            <li>Local para verificar emissão da apólice.</li>
-                            <li><span class="font-mono text-xs md:text-sm bg-slate-100 p-1 rounded border border-slate-200 break-all inline-block mt-1">Caminho: I4Pro &gt; Emissão &gt; Apólice &gt; Consulta Apólice</span></li>
-                            <li class="mt-2">Aqui é onde registramos a Cláusula Beneficiária.</li>
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Sistema principal de Gestão de Apólices.</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Consulta de dados completos da apólice, status de parcelas e emissão.</li>
+                            <li><strong>Caminho Padrão:</strong> <span class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 inline-block">Emissão &gt; Apólice &gt; Consulta Apólice</span></li>
+                            <li><strong>Ações:</strong> É neste sistema que registramos a Cláusula Beneficiária, endossos e reativações.</li>
                         </ul>
                     `)}
+                </div>
+
+                ${SectionTitle('Relacionamento e Front-end')}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
                     ${Card('Salesforce', `
-                        <p class="font-medium text-slate-700">Nosso CRM e sistema de relacionamento.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1.5">
-                            <li>Onde tabulamos todas as ligações e abrimos protocolos (Informação, Solicitação, Reclamação).</li>
-                            <li>Prazo padrão de protocolos abertos aqui: <strong>5 dias úteis</strong>.</li>
-                            <li>Aqui acessamos o IGPS (para rastreador EPS).</li>
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Nosso CRM (Customer Relationship Management).</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Registro e tabulação de 100% das interações com clientes e corretores.</li>
+                            <li><strong>Protocolos:</strong> Abertura de protocolos de Informação, Solicitação e Reclamação.</li>
+                            <li><strong>Prazos:</strong> O prazo padrão para a maioria das tratativas de protocolos é de <strong>5 dias úteis</strong>.</li>
+                            <li><strong>Integração:</strong> Acesso direto ao IGPS (para agendamento de rastreador EPS).</li>
                         </ul>
                     `)}
+                    ${Card('Portal do Segurado', `
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Área de autoatendimento do cliente (Site/App).</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Desafogar a central oferecendo autonomia ao cliente.</li>
+                            <li><strong>Serviços:</strong> Emissão de 2ª via de boletos, consulta de apólice, acionamento de Assistência 24h e abertura rápida de sinistro.</li>
+                            <li><span class="text-emerald-700 font-semibold bg-emerald-50 px-1 rounded">Dica:</span> Sempre oriente e incentive o cliente a utilizar o portal como primeira opção.</li>
+                        </ul>
+                    `)}
+                </div>
+
+                ${SectionTitle('Sistemas Financeiros')}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-6">
                     ${Card('Pagnet', `
-                        <p class="font-medium text-slate-700">Sistema financeiro para Boletos.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1.5">
-                            <li>Consultas de pagamentos realizados via boleto bancário.</li>
-                            <li>Permite imprimir o comprovante em PDF.</li>
-                            <li>Para enviar comprovante: Clicar no nome &gt; imprimir comprovante &gt; enviar via Salesforce.</li>
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Gestão de Boletos Bancários (Bradesco).</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Consultas de pagamentos, status de boletos e análise de rejeições.</li>
+                            <li><strong>Envio de Comprovante:</strong> Permite gerar e imprimir o comprovante em PDF. <br/><span class="font-mono text-xs bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200 mt-1 inline-block">Clicar no nome &gt; Imprimir comprovante</span></li>
+                            <li><strong>Prazos:</strong> Baixa bancária leva até 72h úteis.</li>
                         </ul>
                     `)}
                     ${Card('Solutions', `
-                        <p class="font-medium text-slate-700">Sistema financeiro para Cartão de Crédito.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1.5">
-                            <li>Gestão total de pagamentos em cartão.</li>
-                            <li>Busca feita por Nome ou CPF.</li>
-                            <li>Alteração de cartão, alteração de vencimento.</li>
-                            <li>Envio de link de cobrança (válido por 24h).</li>
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Gestão de Cartão de Crédito.</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Alteração de cartão, mudança de vencimento e gestão de mensalidades recorrentes.</li>
+                            <li><strong>Segurança:</strong> A central <em>não</em> coleta dados. O sistema envia um link de cobrança seguro para o cliente preencher.</li>
+                            <li><strong>Regra do Link:</strong> O link enviado por e-mail tem validade estrita de <strong>24 horas</strong>.</li>
                         </ul>
                     `)}
-                    ${Card('Guidewire & Pipefy', `
-                        <p class="font-medium text-slate-700">Sistemas de Sinistro.</p>
-                        <ul class="list-disc pl-5 mt-2 space-y-1.5">
-                            <li><strong>Guidewire:</strong> Sistema principal para abertura e acompanhamento de sinistros.</li>
-                            <li><strong>Pipefy:</strong> Sistema de contingência (usado apenas se o Guidewire ou o site da Suhai caírem).</li>
+                </div>
+
+                ${SectionTitle('Vistorias e Sinistros')}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    ${Card('Car10', `
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Plataforma de regulação e oficinas.</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Regulação de pequenos danos e acompanhamento de reparos.</li>
+                            <li><strong>Utilização:</strong> Realização de vistorias digitais focadas em colisões (Danos Parciais) e cotação de orçamentos em oficinas parceiras.</li>
+                        </ul>
+                    `)}
+                    ${Card('Autovist / Planetun', `
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Plataforma de vistoria de aceitação.</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função principal:</strong> Realização da autovistoria prévia do veículo para aceitação do risco. (Validade das fotos: 5 dias corridos).</li>
+                            <li><strong>Ação Específica (Recuperados):</strong> Sistema utilizado para enviar o link de <strong>exclusão de avarias</strong> (quando veículo é recuperado sem danos). O preenchimento da proposta deve terminar sempre com <strong>"00"</strong>.</li>
+                        </ul>
+                    `)}
+                    ${Card('Guidewire (Claim Center)', `
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Sistema oficial de Sinistros.</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Função:</strong> Abertura formal, acompanhamento e registro de todas as etapas de sinistro.</li>
+                            <li><strong>Navegação Principal:</strong> 
+                                <ul class="list-circle pl-5 mt-1 space-y-1 text-xs">
+                                    <li><strong>Notas:</strong> Recados do analista (as mais novas ficam no topo).</li>
+                                    <li><strong>Documentos:</strong> Onde são anexados e validados os PDFs (físicos/digitais).</li>
+                                    <li><strong>Atividades:</strong> Pendências e tarefas a serem cumpridas.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    `)}
+                    ${Card('Pipefy', `
+                        <p class="font-medium text-slate-700 border-b border-slate-100 pb-2 mb-2">Gestão de fluxos e contingência.</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-600">
+                            <li><strong>Uso 1 (Contingência):</strong> Abertura de sinistros temporária quando o Guidewire ou Site saem do ar.</li>
+                            <li><strong>Uso 2 (Fluxo R&F):</strong> Sistema usado para criar os cards iniciais de documentação (informações de B.O., Telefones e Tecnologia do veículo) rigorosamente <strong>após 5 dias úteis</strong> do aviso do evento.</li>
                         </ul>
                     `)}
                 </div>
@@ -741,17 +846,17 @@
                     <p class="mb-4"><strong>Endosso</strong> é qualquer documento (emenda) que altera uma informação da apólice após ela ter sido emitida (ex: troca de carro, mudança de CEP, inclusão de cobertura).</p>
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                         <div>
-                            <h4 class="font-bold text-emerald-600 mb-2">Pode gerar prémio (Precificação):</h4>
+                            <h4 class="font-bold text-emerald-600 mb-2">Pode gerar prêmio (Precificação):</h4>
                             <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700">
                                 <li>Substituição de veículo.</li>
                                 <li>Endosso de Cancelamento (pode gerar restituição).</li>
                                 <li>Correção de dados de risco: Sexo, Data de Nascimento, Estado Civil, CEP pernoite, Utilização, Modelo do veículo, Inclusão de Condutor, Inclusão de PTC.</li>
                                 <li>Inclusão ou alteração de RCF (LMI).</li>
                             </ul>
-                            <p class="mt-3 text-xs md:text-sm font-semibold text-amber-700 bg-amber-50 p-2 rounded">Apenas o corretor consegue fazer endossos que geram movimento de prémio.</p>
+                            <p class="mt-3 text-xs md:text-sm font-semibold text-amber-700 bg-amber-50 p-2 rounded">Apenas o corretor consegue fazer endossos que geram movimento de prêmio.</p>
                         </div>
                         <div class="mt-2 lg:mt-0">
-                            <h4 class="font-bold text-red-500 mb-2">Não gera prémio (Sem Precificação):</h4>
+                            <h4 class="font-bold text-red-500 mb-2">Não gera prêmio (Sem Precificação):</h4>
                             <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700">
                                 <li>Alteração de dados cadastrais: Nome, Endereço de correspondência, E-mail, Telefone, Combustível, Cor.</li>
                                 <li>Alteração/Inclusão de placa (veículos zero km, padrão Mercosul ou correção).</li>
@@ -763,11 +868,11 @@
                         <h4 class="font-bold text-slate-800 mb-2">Regras Adicionais e Dúvidas</h4>
                         <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700 mb-4">
                             <li><strong>Corretora Lazam-MDS:</strong> É premissa da parceria que o Endosso seja realizado pela própria Suhai.</li>
-                            <li>A central pode gerar endossos para clientes sem contacto com o corretor <em>desde que não gerem movimento de prémio</em>.</li>
+                            <li>A central pode gerar endossos para clientes sem contato com o corretor <em>desde que não gerem movimento de prêmio</em>.</li>
                             <li>Um endosso só pode ser cancelado se estiver com o status "pendência para emissão".</li>
                             <li>NÃO é permitido alterar o CPF (exceto venda/falecimento rigorosos confirmados), nem alterar o parcelamento, nem retirar RCF contratado.</li>
                         </ul>
-                        ${InlineSalesforceBox("apol_duvidas", "Dúvidas sobre apólice", "Informação", "Apólice", "Dúvidas sobre apólice", "Registo de esclarecimento de dúvidas do segurado referentes ao contrato ou regras de endosso.")}
+                        ${InlineSalesforceBox("apol_duvidas", "Dúvidas sobre apólice", "Informação", "Apólice", "Dúvidas sobre apólice", "Registro de esclarecimento de dúvidas do segurado referentes ao contrato ou regras de endosso.")}
                     </div>
                     
                     <div class="mt-6 bg-slate-50 p-4 border border-slate-200 rounded-lg overflow-hidden">
@@ -805,7 +910,7 @@
 
                 ${Card('Cancelamento de Apólice Duplicada', `
                     <p class="text-sm md:text-base text-slate-700">Se o <strong>mesmo corretor</strong> emitiu duplicado: o cliente precisa solicitar o cancelamento junto ao corretor para transmitir endosso de cancelamento na apólice desejada.<br/><br/>
-                    Se foram <strong>corretores diferentes</strong>: o cliente entra em contacto com o corretor que deseja cancelar. Caso não consiga, abrimos o protocolo abaixo (Prazo 1 dia útil).</p>
+                    Se foram <strong>corretores diferentes</strong>: o cliente entra em contato com o corretor que deseja cancelar. Caso não consiga, abrimos o protocolo abaixo (Prazo 1 dia útil).</p>
                     <div class="mt-4">
                         ${InlineSalesforceBox("canc_duplicada", "Cancelamento de Apólice Duplicada", "Solicitação", "Apólice", "Cancelamento de apólice", "Dados bancários para devolução do valor e nome completo do solicitante.")}
                     </div>
@@ -880,7 +985,7 @@
                 ${Card('', `
                     <ul class="list-disc pl-5 space-y-2 text-slate-700">
                         <li>Boletos são sempre emitidos pelo Banco Bradesco.</li>
-                        <li><strong>Registo:</strong> A 1ª parcela é registada 3 dias após o início de vigência. As restantes são registadas <strong>10 dias antes</strong> do vencimento.</li>
+                        <li><strong>Registro:</strong> A 1ª parcela é registrada 3 dias após o início de vigência. As restantes são registradas <strong>10 dias antes</strong> do vencimento.</li>
                         <li><strong>Régua de Cobrança:</strong> Boleto não cobra juros ou multa por atraso, porque <em>quando atrasa, o veículo perde a cobertura.</em> A Suhai envia cobrança/aviso após 5 dias de atraso.</li>
                         <li><strong>Inadimplência:</strong> O boleto fica disponível no banco por até 40 dias. <strong>Campanha de Recuperação:</strong> A partir do 6º dia de atraso, o portal Solutions abre opções para o cliente negociar a parcela com Cartão, Pix ou Boleto (link válido por 40 dias).</li>
                     </ul>
@@ -909,11 +1014,11 @@
                     `)}
                     ${Card('Devolução de Crédito', `
                         <p class="text-sm mb-3 text-slate-700">Para clientes que pagam após o cancelamento sem direito a reativação devido ao fim da vigência (validar no i4pro se possui 'Fim Vig. Recalculada').</p>
-                        ${InlineSalesforceBox("pag_devolucao", "Devolução de crédito", "Solicitação", "Financeiro", "Devolução de crédito", "Incluir conta bancária e comprovativo. Atenção: Devolução de conta PF para PJ (ou vice-versa) exige que o Contrato Social seja anexado!")}
+                        ${InlineSalesforceBox("pag_devolucao", "Devolução de crédito", "Solicitação", "Financeiro", "Devolução de crédito", "Incluir conta bancária e comprovante. Atenção: Devolução de conta PF para PJ (ou vice-versa) exige que o Contrato Social seja anexado!")}
                     `)}
                     ${Card('Pagamento na Data do Cancelamento', `
                         <p class="text-sm mb-3 text-slate-700">O cliente fez o pagamento no exato dia em que o cancelamento automático ocorreu. A área interna fará a baixa do pagamento e reativação (se possuir vigência recalculada).</p>
-                        ${InlineSalesforceBox("pag_data_canc", "Reativação de Apólice (Pagou na Data)", "Solicitação", "Financeiro", "Reativação de apólice", "Informação do pagamento. Obrigatório anexar o comprovativo original (não serve comprovativo de agendamento).")}
+                        ${InlineSalesforceBox("pag_data_canc", "Reativação de Apólice (Pagou na Data)", "Solicitação", "Financeiro", "Reativação de apólice", "Informação do pagamento. Obrigatório anexar o comprovante original (não serve comprovante de agendamento).")}
                     `)}
                     ${Card('Antecipação / Pagamento em Duplicidade', `
                         <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
@@ -1099,7 +1204,7 @@
 
                     <div class="mt-5 p-4 md:p-5 bg-emerald-50 border border-emerald-200 rounded-lg">
                         <h4 class="font-bold text-emerald-800 mb-2">Status "Suporte Comercial" e Status "Cancelada"</h4>
-                        <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700 mb-3">
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700 mb-3">
                             <li><strong>Suporte Comercial:</strong> Ocorre se o agendamento não foi feito no prazo de 13 dias, se o proprietário é diferente do cadastro, ou se o dispositivo foi instalado por congênere.</li>
                             <li><strong>Histórico da OS (Ícone de Lupa):</strong> Para saber exatamente o que precisa de ser feito (ex: técnico não compareceu, etc), clique no <strong>ícone da lupa</strong> na ordem de serviço. Ele mostra todo o histórico desde o momento da libertação da agenda.</li>
                             <li><strong>Status Cancelada:</strong> Para toda OS cancelada, verifique o histórico. Se for "Vistoria recusada", questione o cliente se ele já fez a pendência. Se sim, peça liberação de agenda. Se for "Solicitação interna Suhai" ou "Cancelamento de proposta/recusa", oriente conforme o cenário.</li>
@@ -1108,7 +1213,7 @@
 
                     <div class="mt-4 p-4 md:p-5 bg-slate-50 border border-slate-200 rounded-lg">
                         <h4 class="font-bold text-slate-800 mb-2">Encaixe e Cidades sem Cobertura</h4>
-                        <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700">
                             <li><strong>Encaixe:</strong> Se aprovado, a Tracker entra em contato 1 dia antes. Se reprovado/sem sucesso, a Tracker também contata para negociar nova data. (O contato de negociação é feito pela Tracker).</li>
                             <li><strong>Cidade sem Cobertura:</strong> Regiões onde a TRK não possui equipe fixa. A TRK avalia a taxa de deslocamento e envia a relação diariamente, a Suhai quem faz o acompanhamento/liberação nestes casos.</li>
                             <li><strong>Instalação em Domicílio (Geral):</strong> Local fechado, sem circulação/câmeras, maior de 18 anos. Motos: tanque máx 1/4 (dura 2h). Agendamento é por <em>período</em> (Manhã: 08h-12h ou Tarde: 13h-17h). Não prometa "horário fixo".</li>
@@ -1142,56 +1247,200 @@
         const contentSinistro = () => `
             <div class="fade-in">
                 <div class="bg-emerald-600 text-white p-5 md:p-8 rounded-2xl mb-6 shadow-md">
-                    <h1 class="text-2xl md:text-3xl font-bold mb-2 flex items-center"><i data-lucide="alert-triangle" class="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 shrink-0"></i> Sinistro</h1>
-                    <p class="opacity-90 text-sm md:text-base mt-1">Como orientar a abertura e conduzir eventos na apólice.</p>
+                    <h1 class="text-2xl md:text-3xl font-bold mb-2 flex items-center"><i data-lucide="alert-triangle" class="w-6 h-6 md:w-8 md:h-8 mr-2 md:mr-3 shrink-0"></i> Sinistro: Roubo e Furto</h1>
+                    <p class="opacity-90 text-sm md:text-base mt-1">Orientações de abertura, condução de eventos, sistemas e gestão de documentação para indenização.</p>
                 </div>
 
-                ${SectionTitle('O que é e Quem Pode Abrir')}
-                ${Card('', `
-                    <ul class="list-disc pl-5 space-y-2 text-slate-700 text-sm md:text-base">
-                        <li>Sinistro é a ocorrência de qualquer evento previsto e coberto no contrato (Roubo, Batida, Alagamento, Dano a terceiro).</li>
-                        <li><strong>Quem pode abrir?</strong> QUALQUER pessoa. Não precisa ser o segurado para ligar e informar que o carro foi roubado.</li>
-                        <li>Porém, a indenização (o dinheiro) só será pago ao proprietário/beneficiário legal do contrato.</li>
-                    </ul>
-                `)}
-
-                ${SectionTitle('Primeira Orientação em Linha')}
-                ${Card('', `
-                    <p class="mb-4 text-sm md:text-base">O canal principal e mais fácil para o cliente é a abertura pelo <strong>Site da Suhai</strong> (Portal do Segurado). Sempre ofereça essa opção primeiro.</p>
-                    
-                    <div class="bg-emerald-50 border border-emerald-200 p-4 md:p-5 rounded-lg">
-                        <h4 class="font-bold text-emerald-800 mb-2 text-base md:text-lg">Abrindo em Linha com o Cliente:</h4>
-                        <p class="text-sm md:text-base mb-3 text-emerald-900">Se ele não conseguir usar o site, pergunte se ele possui em mãos:</p>
-                        <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700">
-                            <li>Dados pessoais completos.</li>
-                            <li>Local exato do sinistro.</li>
-                            <li>Em caso de batida (RCF): Os dados do terceiro.</li>
-                            <li>Em caso de furto: Data do furto e <em class="bg-white px-1 border border-emerald-200 rounded">hora exata</em> em que ele percebeu o veículo sumido.</li>
-                        </ul>
-                        <p class="mt-4 text-xs md:text-sm font-bold text-red-600 bg-red-50 p-2 rounded inline-block">OBRIGATÓRIO: Sempre mande o cliente anotar o NÚMERO DO SINISTRO gerado. Ele precisará disso para enviar documentos e checar status depois.</p>
-                    </div>
-                `)}
-
-                ${SectionTitle('Sistemas de Sinistro')}
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                    ${Card('Sistema Guidewire', `
-                        <p class="text-sm mb-3 font-medium text-slate-800">É o sistema oficial interno para abertura.</p>
-                        <ol class="list-decimal pl-5 space-y-1.5 text-xs md:text-sm font-mono bg-slate-50 p-3 rounded border border-slate-200 break-words">
-                            <li>Sinistro &gt; Novo Sinistro &gt; Pesquisar Apólice.</li>
-                            <li>Preencher SOMENTE os campos com asterisco (*).</li>
-                            <li>Meio de Comunicação: Telefone.</li>
-                            <li>Se não for o segurado ligando, preencha todos os dados do informante.</li>
-                            <li>Confirmar e-mail e finalizar.</li>
-                        </ol>
-                    `)}
-
-                    ${Card('Contingência (Pipefy)', `
-                        <div class="flex flex-col h-full justify-center text-center p-2 md:p-4">
-                            <i data-lucide="alert-triangle" class="w-10 h-10 md:w-12 md:h-12 text-amber-500 mx-auto mb-3"></i>
-                            <p class="font-bold text-slate-800 text-base md:text-lg">Caiu tudo? Use o Pipefy.</p>
-                            <p class="text-sm text-slate-600 mt-2 leading-relaxed">O formulário Pipefy é usado exclusivamente quando o Guidewire sai do ar E o site da Suhai também cai, impossibilitando a abertura por vias normais.</p>
+                ${SectionTitle('1. Prazos Oficiais e Fluxo (Guide Claim Center)')}
+                <div class="grid grid-cols-1 gap-4 md:gap-6">
+                    ${Card('Etapas e Prazos Gerais de Sinistro', `
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-sm text-left border border-slate-200 rounded-lg">
+                                <thead class="text-xs text-slate-700 uppercase bg-slate-50">
+                                    <tr>
+                                        <th class="px-4 py-3 border-b">Etapa</th>
+                                        <th class="px-4 py-3 border-b">Descrição</th>
+                                        <th class="px-4 py-3 border-b">Prazo (A contar do evento anterior)</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-slate-600">
+                                    <tr class="border-b"><td class="px-4 py-2 font-bold">1</td><td class="px-4 py-2">Protocolo - Comunicado de Sinistro</td><td class="px-4 py-2">Imediato (Registro no CECOM/Portal).</td></tr>
+                                    <tr class="border-b"><td class="px-4 py-2 font-bold">2</td><td class="px-4 py-2">Confirmação e registro do sinistro</td><td class="px-4 py-2">Até 2 dias úteis.</td></tr>
+                                    <tr class="border-b"><td class="px-4 py-2 font-bold">3</td><td class="px-4 py-2 text-emerald-700 font-semibold">Solicitação de Documentos Iniciais</td><td class="px-4 py-2 bg-emerald-50 font-medium">Até 5 dias úteis (Após Etapa 1).</td></tr>
+                                    <tr class="border-b"><td class="px-4 py-2 font-bold">4</td><td class="px-4 py-2">Análise de Documentos Físicos</td><td class="px-4 py-2">Até 10 dias úteis.</td></tr>
+                                    <tr class="border-b"><td class="px-4 py-2 font-bold">5</td><td class="px-4 py-2">Análise de Documentos Digitais</td><td class="px-4 py-2 text-red-600 font-bold bg-red-50">Até 2 dias úteis.</td></tr>
+                                    <tr class="border-b"><td class="px-4 py-2 font-bold">6</td><td class="px-4 py-2 text-amber-700 font-semibold">Auditoria Externa / Perícia</td><td class="px-4 py-2 bg-amber-50">Até 15 dias úteis (+10 se houver docs).</td></tr>
+                                    <tr class="border-b"><td class="px-4 py-2 font-bold">7</td><td class="px-4 py-2">Remoção de veículos Salvados</td><td class="px-4 py-2">Até 5 dias úteis após análise.</td></tr>
+                                    <tr><td class="px-4 py-2 font-bold">8</td><td class="px-4 py-2">Pagamento da Indenização</td><td class="px-4 py-2 font-bold text-slate-800 bg-slate-100">Até 30 dias corridos (após TODOS os docs).</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4 p-3 bg-red-50 border-l-4 border-red-500 rounded text-sm text-red-700">
+                            <strong>Importante (Etapa 3):</strong> Apenas podemos solicitar documentos <strong>2 vezes</strong>. Faça o pedido completo desde a primeira vez!
                         </div>
                     `)}
+                </div>
+
+                ${SectionTitle('2. Registro Iniciais e Sistemas (Pipefy/Guidewire)')}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    ${Card('Abertura Contingência (Pipefy)', `
+                        <div class="flex flex-col mb-1">
+                            <h4 class="font-bold text-emerald-700 text-sm mb-2">Após 5 dias, registre no Pipefy:</h4>
+                            <ul class="list-decimal pl-5 space-y-2 text-sm text-slate-700">
+                                <li><strong>Preencher dados:</strong> Aviso Evento, Data do Aviso, Data do Sinistro, Demora da comunicação, Placa Segurada e Evento.</li>
+                                <li><strong>Tecnologia na apólice:</strong> Fundamental registrar "Tecnologia" e "Telefones". Verifique se ligou 190, se fez B.O., Data/Hora, Endereço, Dinâmica, rastreador/alarme particular, chave reserva.</li>
+                                <li><strong>Finalizar:</strong> Confirmar e-mails e Número da Apólice. Clicar em "Criar novo card".</li>
+                            </ul>
+                        </div>
+                    `)}
+                    ${Card('Acompanhamento Guidewire e Analista', `
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700 mb-3">
+                            <li><strong>Mapeamento de Corretoras:</strong> O sistema mapeia corretoras parceiras: Honda LTDA, Evora News, H&H, Mauer, Minuto, MM5, Moema Super, Simular, Togarantido, Santander e Yamaha.</li>
+                            <li><strong>Rotina:</strong> Olhar as <strong>Notas</strong> (mais novas no topo), aba <strong>Documentos</strong> (verificar se tem duas páginas e se é físico/digital) e aba <strong>Atividades</strong>.</li>
+                        </ul>
+                        <div class="p-3 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800">
+                            <strong class="block mb-1">Atenção à Nota do Analista!</strong>
+                            Se o analista incluir uma nota pedindo "novos dados bancários para pagamento" e o cliente não tiver, você deve <strong>abrir protocolo (Reclamação > Sinistro > Análise)</strong>.
+                        </div>
+                    `)}
+                </div>
+
+                ${SectionTitle('3. Documentos Solicitados Inicialmente')}
+                ${Card('Lista de Solicitação (Envio Digital)', `
+                        <p class="text-sm text-slate-700 mb-3">Estes são os documentos frequentemente solicitados que devem ser enviados via portal digital:</p>
+                        <ul class="list-disc pl-5 space-y-1.5 text-sm text-slate-700 bg-slate-50 p-4 rounded-lg border border-slate-200 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2">
+                            <li>Boletim de Ocorrência Policial.</li>
+                            <li>CRLV - Certificado de Registro e Licenciamento.</li>
+                            <li>Laudo de atendimento médico (Em caso de ACIDENTE).</li>
+                            <li>Laudo Necroscópico do IML (Em caso de ÓBITO no acidente).</li>
+                            <li>Boletim de Localização/Recuperação (Veículo Recuperado).</li>
+                            <li>Auto de Entrega (Veículo Recuperado).</li>
+                            <li>Baixa da Restrição de Roubo/Furto (Fornecido pela polícia após devolução).</li>
+                            <li>Requisição e Laudo de Perícia do IC (Instituto de Criminalística).</li>
+                            <li>Orçamento de reparo.</li>
+                        </ul>
+                `)}
+
+                ${SectionTitle('4. Documentos Físicos e Especiais')}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    ${Card('O CRV (Certificado de Registro de Veículo)', `
+                        <p class="text-sm text-slate-700 mb-2">Também conhecido como DUT. É obrigatório no momento da transferência de propriedade.</p>
+                        <ul class="list-disc pl-5 space-y-2 text-xs md:text-sm text-slate-600 mb-3">
+                            <li><strong>Preenchimento:</strong> Obrigatório preencher TODOS os campos sem rasuras e <strong>reconhecer firma por autenticidade</strong>. Assinatura no campo VENDEDOR.</li>
+                            <li><strong>Valor:</strong> O valor do veículo no CRV não tem relação com a FIPE (exigência do cartório).</li>
+                            <li><strong>Restrições:</strong> Administrativas/judiciais devem ser baixadas ANTES do preenchimento.</li>
+                            <li><strong>Roubado junto com veículo:</strong> Deve constar essa informação no B.O. Se não tiver, orientar a ir na delegacia fazer adendo.</li>
+                        </ul>
+                        ${DownloadBtn('Declaração de Erro de Preenchimento')}
+                        ${DownloadBtn('Declaração de Perda/Extravio do CRV')}
+                    `)}
+                    
+                    ${Card('Procuração e Intenção de Venda', `
+                        <p class="text-sm font-bold text-slate-800 mb-2">Uso da Procuração:</p>
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700 mb-3">
+                            <li><strong>CRV em nome de terceiro:</strong> Cliente tem o CRV, mas no nome de outro. Enviar Procuração com firma autenticada + CRV preenchido.</li>
+                            <li><strong>CRV perdido com queixa de roubo:</strong> Não dá pra tirar 2ª via. Enviar <em>Decl. de Perda/Extravio</em> + <em>Procuração</em> (ambas autenticadas).</li>
+                        </ul>
+                        ${DownloadBtn('Modelo de Procuração')}
+                        <hr class="my-3"/>
+                        <p class="text-sm font-bold text-slate-800 mb-2">Exceção Detran-RJ (Intenção de Venda):</p>
+                        <p class="text-sm text-slate-700">Na falta do CRV preenchido ou documento com código de segurança, o segurado do RJ deve enviar a Intenção de Venda (físico e digital) registrada no cartório por autenticidade.</p>
+                    `)}
+
+                    ${Card('Documentação Complementar de Indenização', `
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li><strong>Chaves (Original/Reserva):</strong> ROUBO (se levada, deve constar no B.O. Faltando reserva: declaração simples). FURTO (Envio obrigatório).</li>
+                            <li><strong>CNH:</strong> Do último condutor no momento do roubo/furto, OU da pessoa que vai receber a indenização.</li>
+                            <li><strong>Veículo 0KM (100% NF):</strong> Seguro feito em máx 72h da entrega, 1º sinistro, ocorrido em até 90 dias da entrega. Exige a Nota Fiscal da concessionária.</li>
+                            <li><strong>Outros Físicos (Exceções):</strong> Contrato de Locação, Alvará de Partilha (inventário), Termo de Curatela, Guias ICMS/IPI (Isenção), RG/CPF, Contrato Social (PJ - Define sócios, capital e poderes), AVCB (Incêndio), Tacógrafo (Caminhão), NF Blindagem/Exército.</li>
+                        </ul>
+                    `)}
+
+                    ${Card('Comprovantes (Residência, Quitação e Formulário)', `
+                        <ul class="space-y-3 text-sm text-slate-700">
+                            <li><strong>Formulário de Indenização:</strong> Exige firma por <strong>AUTENTICIDADE</strong> do proprietário e segurado (Se for o mesmo, assina só 1 vez). Dados bancários do favorecido exato (PF para PF, PJ para PJ).
+                                ${DownloadBtn('Formulário de Indenização')}</li>
+                            <li><strong>Comp. Residência:</strong> IR, contracheque, contas de consumo. Se não tiver nada:
+                                ${DownloadBtn('Declaração Suhai de Residência')}</li>
+                            <li><strong>Débitos (Nada Consta):</strong> Todos os débitos devem estar quitados. <em>Suhai NÃO quita: Multas, IPVA, Licenciamento. (Descontará do valor pago). Suhai PODE quitar e deduzir: Financiamento/Consórcio.</em></li>
+                        </ul>
+                    `)}
+                </div>
+
+                ${SectionTitle('5. Pagamentos, Quitação e Financiamentos')}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                    ${Card('Boleto de Quitação e Carta Saldo', `
+                        <p class="text-sm text-slate-700 mb-2">Se o veículo é financiado, na reta final da indenização, a Suhai pede o Boleto e Carta Saldo do banco.</p>
+                        <ul class="list-disc pl-5 space-y-2 text-sm text-slate-700 mb-3">
+                            <li><strong>Vencimento:</strong> Mínimo 10 dias úteis. (Se não conseguir, o mínimo é 5 dias úteis e deve-se abrir protocolo).</li>
+                            <li><strong>Regras:</strong> Valor TOTAL da dívida (não aceitamos amortização). Só enviar APÓS a Suhai pedir.</li>
+                            <li><strong>Baixa do Gravame:</strong> Feita pela própria financeira informando ao Detran após a Suhai pagar o boleto.</li>
+                        </ul>
+                        <div class="bg-slate-100 p-3 rounded mt-2 border border-slate-200">
+                            <p class="text-sm font-semibold text-slate-800">Cálculo de Valor Residual:</p>
+                            <p class="text-xs text-slate-600 mt-1">O cliente recebe e-mail informando o Valor FIPE menos os descontos (Boleto Financeira, Parcelas pendentes do seguro, Débitos IPVA/Multas). O que sobrar é repassado ao segurado.</p>
+                        </div>
+                    `)}
+                    ${Card('Substituição de Garantia (Honda/Yamaha)', `
+                        <p class="text-sm text-slate-700 mb-3">Quando o veículo sinistrado é trocado por outro dentro do mesmo financiamento (negociação Cliente x Concessionária). Válido apenas para Honda e Yamaha.</p>
+                        <p class="text-sm text-slate-700 mb-4">O cliente envia o formulário original da Suhai com firma reconhecida por autenticidade (substituindo a carta saldo e o boleto).</p>
+                        ${DownloadBtn('Formulário Subs. de Garantia')}
+                        <hr class="my-4"/>
+                        <p class="text-sm font-semibold text-red-600 mb-2">Pagamento de Indenização Rejeitado</p>
+                        <p class="text-sm text-slate-700 mb-3">Se o cliente não recebeu no dia programado, verifique o sistema <strong>PAGNET</strong>. Se houver erro de conta, abrir protocolo.</p>
+                        ${InlineSalesforceBox("pagamento_rejeitado", "Pagamento Rejeitado", "Solicitação", "Financeiro", "Pagamento Rejeitado", "Descrição: Conta PF/PJ - Conta - Agência - Banco - CPF")}
+                    `)}
+                </div>
+
+                ${SectionTitle('6. Veículos Recuperados e Auditoria')}
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                    ${Card('Fluxo de Veículo Recuperado', `
+                        <p class="text-sm text-slate-700 mb-2 border-l-4 border-emerald-500 pl-3"><strong>Recuperado APÓS indenização paga:</strong> Veículo já é da Suhai. Cliente só deve informar a localização imediatamente.</p>
+                        <p class="text-sm font-bold text-emerald-700 mt-4 mb-2">Triagem de Avarias (Antes do Pagamento):</p>
+                        <ul class="list-disc pl-5 space-y-3 text-sm text-slate-700 mb-4">
+                            <li><strong>Inferior a 75% COM danos:</strong> Cliente faz o conserto e liga solicitando o link de "Vistoria Pós Sinistro".</li>
+                            <li><strong>Inferior a 75% SEM danos:</strong> Enviar link de "Exclusão de Avarias" via Autovist para reativar o seguro (Sempre preencher o N. da proposta com "00" no final).</li>
+                            <li><strong>Superior a 75% (Danos Graves):</strong> Seguirá o fluxo de recuperado com danos via I4Pro/Guidewire.</li>
+                        </ul>
+                        <div class="bg-slate-50 p-3 border border-slate-200 rounded">
+                            <p class="text-sm font-bold text-slate-800">Cliente não concorda com Análise Parcial?</p>
+                            <p class="text-xs text-slate-600 mt-1 mb-2">Se ele discordar da conclusão de indenização parcial, pode pedir reanálise (obrigatório ter orçamento acima de 75% em mãos).</p>
+                            ${InlineSalesforceBox("pedido_reanalise", "Pedido de Reanálise", "Solicitação", "Sinistro", "Pedido de Reanalise", "Tipo de Sinistro: Roubo Recuperado")}
+                        </div>
+                    `)}
+                    
+                    ${Card('Auditoria de Qualidade e Recusas', `
+                        <p class="text-sm text-slate-700 mb-3">Tratada como "pendência de documentos" quando há dúvidas de veracidade. Podem pedir entrevista presencial e croqui.</p>
+                        <div class="bg-red-50 border border-red-200 p-3 rounded mb-4">
+                            <p class="text-xs md:text-sm font-bold text-red-700"><i data-lucide="alert-octagon" class="w-4 h-4 inline mr-1 -mt-0.5"></i> TERMOS PROIBIDOS EM LINHA:</p>
+                            <p class="text-xs md:text-sm text-red-600">Nunca utilize: Sindicância, Investigação, Suspeita ou Fraude.</p>
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1 text-sm text-slate-700 mb-4">
+                            <li><strong>Prazo de Auditoria:</strong> 15 dias úteis a partir do início.</li>
+                            <li><strong>Acréscimo:</strong> +10 dias úteis se novos documentos forem solicitados.</li>
+                        </ul>
+                        ${InlineSalesforceBox("auditoria_atraso", "Atraso na Auditoria", "Reclamação", "Sinistro", "Atraso na auditoria de qualidade", "Se ultrapassar 15 dias úteis sem atualização no sistema. Tipo de sinistro: Roubo/Furto.")}
+                        <hr class="my-4"/>
+                        <p class="text-sm font-bold text-slate-800 mb-2">Motivos Comuns de Recusa:</p>
+                        <ol class="list-decimal pl-5 space-y-1 text-xs md:text-sm text-slate-600">
+                            <li>Falta de contratação da cobertura de roubo/furto.</li>
+                            <li>Falta de pagamento de parcelas (inadimplência suspende).</li>
+                            <li>Recusa por Auditoria de Qualidade (Informações inválidas).</li>
+                        </ol>
+                    `)}
+                </div>
+
+                <div class="bg-emerald-800 text-white p-6 rounded-xl mt-8 text-center shadow-md">
+                    <i data-lucide="mail" class="w-8 h-8 mx-auto mb-3 text-emerald-300"></i>
+                    <h3 class="font-bold text-lg mb-1">Envio de Documentos Físicos (Após Conclusão)</h3>
+                    <p class="text-sm opacity-90 mb-3">Assim que o segurado recebe a conclusão da análise de danos como Integral, deve enviar os físicos para:</p>
+                    <div class="inline-block bg-emerald-900 px-6 py-4 rounded-lg font-mono text-sm border border-emerald-700">
+                        Suhai Seguradora S.A.<br/>
+                        Caixa Postal nº 99<br/>
+                        Av. Sansão, 98<br/>
+                        Jardim São Pedro, Barueri - SP<br/>
+                        CEP: 06402-970
+                    </div>
                 </div>
             </div>
         `;
